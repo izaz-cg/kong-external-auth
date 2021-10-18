@@ -16,20 +16,8 @@ function ExternalAuthHandler:access(conf)
   local client = http.new()
   client:set_timeouts(conf.connect_timeout, send_timeout, read_timeout)
 
-  local body_value = json.encode({
-    method = kong.request.get_method(),
-    path = kong.request.get_path(),
-    query = kong.request.get_query(),
-    headers = kong.request.get_headers()
-  }) 
-
   local res, err = client:request_uri(conf.url, {
-    method = "POST",
-    path = conf.path,
-    body = body_value,
-    headers = {
-        ["Content-Type"] = "application/json"
-    }
+    method = "GET"
   })
 
   if not res then
