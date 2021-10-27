@@ -17,8 +17,12 @@ function ExternalAuthHandler:access(conf)
   client:set_timeouts(conf.connect_timeout, send_timeout, read_timeout)
 
   local res, err = client:request_uri(conf.url, {
+    path = conf.path,
+    query = {
+      "auth_token": conf.token_header
+    },
     headers = {
-      ["authenticationtoken"] = conf.token_header
+      ["Accepts"] : "application/json"
     },
     method = "GET"
   })
