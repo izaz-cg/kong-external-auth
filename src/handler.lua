@@ -3,7 +3,6 @@ local http = require "resty.http"
 local json = require "cjson"
 
 local kong = kong
-local ngx = ngx
 
 local ExternalAuthHandler = BasePlugin:extend()
 
@@ -20,10 +19,10 @@ function ExternalAuthHandler:access(conf)
   local res, err = client:request_uri(conf.url, {
     path = conf.path,
     query = {
-      "auth_token" = ngx.req.get_headers[conf.token_header]
+      auth_token = kong.request.get_header(conf.token_header)
     },
     headers = {
-      ["Accepts"] = "application/json"
+      Accepts = "application/json"
     },
     method = "GET"
   })
