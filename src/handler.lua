@@ -17,6 +17,9 @@ function ExternalAuthHandler:access(conf)
   client:set_timeouts(conf.connect_timeout, send_timeout, read_timeout)
 
   local res, err = client:request_uri(conf.url, {
+    headers = {
+      ["authenticationtoken"] = conf.token_header
+    },
     method = "GET"
   })
 
@@ -31,7 +34,7 @@ function ExternalAuthHandler:access(conf)
   elseif res.status ~= 200 then
     return kong.response.exit(401, {message=conf.message_401})
   else
-    kong.service.request.set_header(conf.header, res.body)
+    kong.service.request.set_header(conf.injection_header, res.body)
   end
 end
 
