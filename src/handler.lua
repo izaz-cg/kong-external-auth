@@ -38,7 +38,21 @@ function ExternalAuthHandler:access(conf)
   elseif res.status ~= 200 then
     return kong.response.exit(401, {message=conf.message_401})
   else
-    kong.service.request.set_header(conf.injection_header, res.body)
+    if not res.body then
+      return kong.response.exit(500, {message="no authentication response"})
+    end
+
+    local decoded_body = json.decode(res.body)
+    if not decoded_body then
+      return kong.response.exit(500, {message="empty authentication response object"})
+    end
+    
+    local user = decoded_body["output"]
+    if not user then
+      return kong.response.exit(500, {message="no user details in authentication response"})
+    end
+
+    kong.service.request.set_header(conf.injection_header, json.encode(user))
   end
 end
 
