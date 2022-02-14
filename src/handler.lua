@@ -15,22 +15,29 @@ function ExternalAuthHandler:access(conf)
 
   local client = http.new()
   client:set_timeouts(conf.connect_timeout, send_timeout, read_timeout)
-
+  print(kong.request.get_headers())
+  print("~~~~~")
+  print("conf.token_header")
+  print(conf.token_header)
+  print("~~~~~")
+  print(kong.request.get_header(conf.token_header))
   local res, err = client:request_uri(conf.url, {
     path = conf.path,
     query = {
       auth_token = kong.request.get_header(conf.token_header)
     },
     headers = {
-      Accepts = "application/json"
+      Accepts = "application/json",
+      Authorization = kong.request.get_header(conf.token_header)
     },
-    method = "GET"
+    method = "POST"
   })
 
   if not res then
     return kong.response.exit(500, {message=err})
   end
-
+  print("res")
+  print(res.status)
   if res.status == 403 then
     return kong.response.exit(403, {message=conf.message_403})
   elseif res.status == 404 then
@@ -41,7 +48,7 @@ function ExternalAuthHandler:access(conf)
     if not res.body then
       return kong.response.exit(502, {message="no authentication response"})
     end
-
+    print(res.body)
     local decoded_body = json.decode(res.body)
     if not decoded_body then
       return kong.response.exit(502, {message="empty authentication response object"})
