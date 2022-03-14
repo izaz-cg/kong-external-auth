@@ -10,7 +10,7 @@ function ExternalAuthHandler:new()
   ExternalAuthHandler.super.new(self, "external-auth")
 end
 
-function get_company_id():
+function get_company_id()
     local company_id = kong.request.get_query_args("company_id")
     
     if not company_id then
