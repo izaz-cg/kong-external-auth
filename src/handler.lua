@@ -10,23 +10,6 @@ function ExternalAuthHandler:new()
   ExternalAuthHandler.super.new(self, "external-auth")
 end
 
-function get_company_id()
-    local company_id = kong.request.get_query_args("company_id")
-    
-    if not company_id then
-        local body, err, mimetype = kong.reqest.get_body()
-        if body then
-            if mimetype == "application/json" then
-                company_id = body.company_id
-            end
-            if mimetype == "multipart/form-data" then
-                company_id = body.company_id
-            end
-        end
-    end
-    return company_id
-end
-
 function ExternalAuthHandler:access(conf)
   ExternalAuthHandler.super.access(self)
 
@@ -36,12 +19,10 @@ function ExternalAuthHandler:access(conf)
   local res, err = client:request_uri(conf.url, {
     path = conf.path,
     query = {
-      auth_token = kong.request.get_header(conf.token_header),
-      company_id = get_company_id()
+      auth_token = kong.request.get_header(conf.token_header)
     },
     headers = {
-      Accepts = "application/json",
-      Referrer = kong.request.get_header("Referrer")
+      Accepts = "application/json"
     },
     method = "GET"
   })
