@@ -11,9 +11,9 @@
     end
 
     function get_company_id()
-      local company_id = kong.request.get_query_args("company_id")
+      local company_id = kong.request.get_query_arg("company_id")
       if not company_id then
-        local body, err, mimetype = kong.reqest.get_body()
+        local body, err, mimetype = kong.request.get_body()
         if body then
           if mimetype == "application/json" then
             company_id = body.company_id
