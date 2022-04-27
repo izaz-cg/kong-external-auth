@@ -72,6 +72,10 @@
         end
 
         kong.service.request.set_header(conf.injection_header, json.encode(user))
+        
+        if decoded_body["company_details"] then
+            kong.service.request.set_header(conf.company_injection_header, json.encode(decoded_body["company_details"]))
+        end
       end
     end
 
