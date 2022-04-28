@@ -10,7 +10,7 @@ return {
     message_403 = { default = "You don't have enough permissions to access", type = "string" },
     message_404 = { default = "Not Found", type = "string" },
     injection_header = { default = "X-CG-User", type = "string" },
-    company_injection_header = { default = "cg-company", type = "string" },
+    company_injection_header = { default = "X-CG-Company", type = "string" },
     token_header = { default = "authenticationtoken", type = "string" }
   }
 }
