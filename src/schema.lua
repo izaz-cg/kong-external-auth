@@ -11,6 +11,7 @@ return {
     message_404 = { default = "Not Found", type = "string" },
     injection_header = { default = "X-CG-User", type = "string" },
     company_injection_header = { default = "X-CG-Company", type = "string" },
-    token_header = { default = "authenticationtoken", type = "string" }
+    token_header = { default = "authenticationtoken", type = "string" },
+    masking_header = { default = "X-Allow", type = "boolean"}
   }
 }
