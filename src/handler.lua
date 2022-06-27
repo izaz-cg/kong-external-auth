@@ -41,7 +41,8 @@
         },
         headers = {
           Accepts = "application/json",
-          referer = kong.request.get_header("referer")
+          referer = kong.request.get_header("referer"),
+          x-allow = kong.request.get_header(conf.masking_header)
         },
         method = "GET"
       })
