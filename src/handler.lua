@@ -37,7 +37,8 @@ function ExternalAuthHandler:access(conf)
     path = conf.path,
     query = {
       auth_token = kong.request.get_header(conf.token_header),
-      company_id = get_company_id()
+      company_id = get_company_id(),
+      ip_address = kong.client.get_ip()
     },
     headers = {
       Accepts = "application/json",
