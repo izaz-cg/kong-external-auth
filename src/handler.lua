@@ -27,6 +27,17 @@ function get_company_id()
   return company_id
 end
 
+
+function has_value(tab, val)
+  for index, value in ipairs(tab) do
+    if value == val then
+        return true
+    end
+  end
+  return false
+end
+
+
 function ExternalAuthHandler:access(conf)
   ExternalAuthHandler.super.access(self)
 
