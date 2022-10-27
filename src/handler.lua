@@ -37,10 +37,13 @@ function ExternalAuthHandler:access(conf)
   local res, err = client:request_uri(conf.url, {
     path = conf.path,
     query = {
-      auth_token = kong.request.get_header(conf.token_header)
+      auth_token = kong.request.get_header(conf.token_header),
+      company_id = company_id,
+      ip_address = kong.client.get_ip()
     },
     headers = {
-      Accepts = "application/json"
+      Accepts = "application/json",
+      referer = kong.request.get_header("referer")
     },
     method = "GET"
   })
@@ -71,6 +74,14 @@ function ExternalAuthHandler:access(conf)
     end
 
     kong.service.request.set_header(conf.injection_header, json.encode(user))
+
+    if kong.request.get_header(conf.masking_header) then 
+      kong.service.request.set_header(conf.masking_header, kong.request.get_header(conf.masking_header))
+    end
+    
+    if decoded_body["company_details"] then
+        kong.service.request.set_header(conf.company_injection_header, json.encode(decoded_body["company_details"]))
+    end
 
     if kong.request.get_path() == "/recovery/portfolio" and has_value(conf.new_portfolio_company_id, company_id) then
       kong.service.request.set_path("/portfolio/v1/loan")
