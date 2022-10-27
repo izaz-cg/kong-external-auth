@@ -10,11 +10,29 @@ function ExternalAuthHandler:new()
   ExternalAuthHandler.super.new(self, "external-auth")
 end
 
+function get_company_id()
+  local company_id = kong.request.get_query_arg("company_id")
+  if not company_id then
+    local body, err, mimetype = kong.request.get_body()
+    if body then
+      if mimetype == "application/json" then
+        company_id = body.company_id
+      else
+        if mimetype == "multipart/form-data" then
+          company_id = body.company_id
+        end
+      end
+    end
+  end
+  return company_id
+end
+
 function ExternalAuthHandler:access(conf)
   ExternalAuthHandler.super.access(self)
 
   local client = http.new()
   client:set_timeouts(conf.connect_timeout, send_timeout, read_timeout)
+  local company_id = get_company_id()
 
   local res, err = client:request_uri(conf.url, {
     path = conf.path,
@@ -53,6 +71,10 @@ function ExternalAuthHandler:access(conf)
     end
 
     kong.service.request.set_header(conf.injection_header, json.encode(user))
+
+    if kong.request.get_path() == "/recovery/portfolio" and has_value(conf.new_portfolio_company_id, company_id) then
+      kong.service.request.set_path("/portfolio/v1/loan")
+    end
   end
 end
 
