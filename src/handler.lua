@@ -93,12 +93,12 @@ function ExternalAuthHandler:access(conf)
 
     if kong.request.get_path() == "/recovery/portfolio" and has_value(conf.new_portfolio_company_id, company_id) then
       local client = http.new()
-      return kong.response.exit(301, 'page moved - redirecting...', {['Location'] = conf.portfolio_url .. "/portfolio/v1/loan" .. kong.request.get_raw_query()})
+      return kong.response.exit(301, 'page moved - redirecting...', {['Location'] = conf.portfolio_url .. "/portfolio/v1/loan?" .. kong.request.get_raw_query()})
     end
 
     if kong.request.get_path() == "/recovery/portfolio" and has_value(conf.new_credit_line_portfolio_company_id, company_id) then
       local client = http.new()
-      return kong.response.exit(301, 'page moved - redirecting...', {['Location'] = conf.portfolio_url .. "/portfolio/v1/credit-line" .. kong.request.get_raw_query()})
+      return kong.response.exit(301, 'page moved - redirecting...', {['Location'] = conf.portfolio_url .. "/portfolio/v1/credit-line?" .. kong.request.get_raw_query()})
     end
   end
 end
