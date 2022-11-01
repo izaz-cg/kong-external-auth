@@ -91,7 +91,7 @@ function ExternalAuthHandler:access(conf)
         kong.service.request.set_header(conf.company_injection_header, json.encode(decoded_body["company_details"]))
     end
 
-    if kong.request.get_path() == "/recovery/portfolio" and has_value(conf.new_portfolio_company_id, company_id) then
+    if kong.request.get_path() == "/recovery/portfolio" and has_value(conf.new_loan_portfolio_company_id, company_id) then
       return kong.response.exit(301, 'page moved - redirecting...', {['Location'] = conf.portfolio_url .. "/portfolio/v1/loan?" .. kong.request.get_raw_query()})
     end
 
