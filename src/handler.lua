@@ -43,6 +43,14 @@ function ExternalAuthHandler:access(conf)
   client:set_timeouts(conf.connect_timeout, send_timeout, read_timeout)
   local company_id = get_company_id()
 
+  if kong.request.get_path() == "/recovery/portfolio" and has_value(conf.new_loan_portfolio_company_id, company_id) then
+    return kong.response.exit(301, 'page moved - redirecting...', {['Location'] = conf.portfolio_url .. "/portfolio/v1/loan?" .. kong.request.get_raw_query()})
+  end
+
+  if kong.request.get_path() == "/recovery/portfolio" and has_value(conf.new_credit_line_portfolio_company_id, company_id) then
+    return kong.response.exit(301, 'page moved - redirecting...', {['Location'] = conf.portfolio_url .. "/portfolio/v1/credit-line?" .. kong.request.get_raw_query()})
+  end
+
   local res, err = client:request_uri(conf.url, {
     path = conf.path,
     query = {
@@ -91,13 +99,6 @@ function ExternalAuthHandler:access(conf)
         kong.service.request.set_header(conf.company_injection_header, json.encode(decoded_body["company_details"]))
     end
 
-    if kong.request.get_path() == "/recovery/portfolio" and has_value(conf.new_loan_portfolio_company_id, company_id) then
-      return kong.response.exit(301, 'page moved - redirecting...', {['Location'] = conf.portfolio_url .. "/portfolio/v1/loan?" .. kong.request.get_raw_query()})
-    end
-
-    if kong.request.get_path() == "/recovery/portfolio" and has_value(conf.new_credit_line_portfolio_company_id, company_id) then
-      return kong.response.exit(301, 'page moved - redirecting...', {['Location'] = conf.portfolio_url .. "/portfolio/v1/credit-line?" .. kong.request.get_raw_query()})
-    end
   end
 end
 
