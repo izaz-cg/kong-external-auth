@@ -27,17 +27,27 @@ function get_company_id()
   return company_id
 end
 
+function has_value(tab, val)
+  for index, value in ipairs(tab) do
+    if value == val then
+        return true
+    end
+  end
+  return false
+end
+
 function ExternalAuthHandler:access(conf)
   ExternalAuthHandler.super.access(self)
 
   local client = http.new()
   client:set_timeouts(conf.connect_timeout, send_timeout, read_timeout)
+  local company_id = get_company_id()
 
   local res, err = client:request_uri(conf.url, {
     path = conf.path,
     query = {
       auth_token = kong.request.get_header(conf.token_header),
-      company_id = get_company_id(),
+      company_id = company_id,
       ip_address = kong.client.get_ip()
     },
     headers = {
@@ -79,6 +89,16 @@ function ExternalAuthHandler:access(conf)
     
     if decoded_body["company_details"] then
         kong.service.request.set_header(conf.company_injection_header, json.encode(decoded_body["company_details"]))
+    end
+
+    if kong.request.get_path() == "/recovery/portfolio" and has_value(conf.new_portfolio_company_id, company_id) then
+      local client = http.new()
+      return kong.response.exit(301, 'page moved - redirecting...', {['Location'] = conf.portfolio_url .. "/portfolio/v1/loan" .. kong.request.get_raw_query()})
+    end
+
+    if kong.request.get_path() == "/recovery/portfolio" and has_value(conf.new_credit_line_portfolio_company_id, company_id) then
+      local client = http.new()
+      return kong.response.exit(301, 'page moved - redirecting...', {['Location'] = conf.portfolio_url .. "/portfolio/v1/credit-line" .. kong.request.get_raw_query()})
     end
   end
 end
