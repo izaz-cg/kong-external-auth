@@ -80,6 +80,10 @@ function ExternalAuthHandler:access(conf)
     if decoded_body["company_details"] then
         kong.service.request.set_header(conf.company_injection_header, json.encode(decoded_body["company_details"]))
     end
+
+    if decoded_body["tenant_config"] then
+      kong.service.request.set_header(conf.tenant_injection_header, json.encode(decoded_body["tenant_config"]))
+  end
   end
 end
 
