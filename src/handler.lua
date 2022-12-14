@@ -43,7 +43,8 @@ function ExternalAuthHandler:access(conf)
     headers = {
       Accepts = "application/json",
       referer = kong.request.get_header("referer"),
-      api_endpoint = kong.request.get_path()
+      api_endpoint = kong.request.get_path(),
+      api_method = kong.request.get_method()
     },
     method = "GET"
   })
